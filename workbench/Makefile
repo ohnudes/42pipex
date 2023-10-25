@@ -38,7 +38,7 @@ all: obj $(LIBFT) $(NAME)
 obj:
 	@mkdir -p $(OBJ_DIR)
 
-$(LIBFT):
+libft:
 	make -C $(LIBFT_DIR)
 	make clean -C $(LIBFT_DIR)
 
@@ -49,7 +49,7 @@ $(NAME): $(OBJ)
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC) Makefile
 	gcc $(FLAGS) -c $< -I$(INC_DIR) -Llibft -lft -o $@
 
-test: fclean $(LIBFT)
+test: fclean libft Makefile
 	gcc $(FLAGS) $(TEST) -I$(INC_DIR) -Llibft -lft -o $(TEST_OUT)
 
 # mostrar a Martin

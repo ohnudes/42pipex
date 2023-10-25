@@ -21,14 +21,19 @@ char	*get_path(char **env)
 	return (*env + 5);
 }
 
-int	main(int ac, char *av[], char *env[])
+int	main(int ac, char **av, char *env[])
 {
 	char	*rawpath;
 	char	**paths;
+	int		i;
 
+	if (ac != 1)
+		return (1);
 	rawpath = get_path(env);
-	printf("get_path:\n%s\n", rawpath);
 	paths = ft_split(rawpath, ':');
-
+	i = 0;
+	while (paths[i++ + 1])
+		printf("%s\n", *(paths + i));
+	free(paths);
 	return (0);
 }
