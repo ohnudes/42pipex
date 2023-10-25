@@ -1,3 +1,3 @@
-.cache/
-./workbench/.cache/
-./workbench/libft/.cache/
+*/**/.cache
+*/**/.out
+*/**/.o
