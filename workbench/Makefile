@@ -12,7 +12,7 @@ INC_DIR = include/
 LIBFT_DIR = libft/
 
 # Sources files
-SRC_FILE = parsing.c utils.c handle.c
+SRC_FILE = init.c utils.c handle.c pipex_main.c
 OBJ_FILE = $(SRC_FILE:.c=.o)
 INC_FILE = pipex.h
 
@@ -38,19 +38,19 @@ all: obj $(LIBFT) $(NAME)
 obj:
 	@mkdir -p $(OBJ_DIR)
 
-libft:
-	make -C $(LIBFT_DIR)
-	make clean -C $(LIBFT_DIR)
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
+	@make clean -C $(LIBFT_DIR)
 
 $(NAME): $(OBJ) 
 	@echo Creating program $(NAME)...
-	cc $(OBJ) -o $(NAME) -L$(LIBFT_DIR) -lft
+	cc $(OBJ) -L$(LIBFT_DIR) -lft -o $(NAME)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC) Makefile
 	gcc $(FLAGS) -c $< -I$(INC_DIR) -Llibft -lft -o $@
 
-test: fclean libft Makefile
-	gcc $(FLAGS) $(TEST) -I$(INC_DIR) -Llibft -lft -o $(TEST_OUT)
+test: $(LIBFT) Makefile
+	gcc -o $(TEST_OUT) $(FLAGS) $(TEST) -I$(INC_DIR) -Llibft -lft 
 
 # mostrar a Martin
 #update_gitignore:
@@ -66,4 +66,4 @@ clean:
 
 re: fclean all
 
-.PHONY: all clean fclean re obj libft test
+.PHONY: all clean fclean re obj test

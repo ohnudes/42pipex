@@ -4,7 +4,6 @@
 # define READ_END 0
 # define WRITE_END 1
 # define MAX_PATH_LENGHT 4096
-# define ERROR_MESSAGE "custom err_message with printf template"
 
 # include <unistd.h> /* close, read, write, access, dup, dup2, exit, pipe, execve */
 # include <fcntl.h> /* open, unlink */
@@ -15,30 +14,39 @@
 # include <sys/wait.h> /* wait, waitpid */
 # include "../libft/includes/libft.h"
 
-typedef struct	s_errctl
+typedef struct	s_fdbridge
 {
-	int exit;
-	int	argc;
-	int	pipe;
-	int	fork;
-}				t_errctl;
+	int		ft1;
+	int		ft2;
+	int		fd[2];
+}				t_fdbridge;
 
-typedef struct	s_bodyctl
+typedef struct	s_pathdata
 {
-	char		*rawpath;
-	char		**paths;
-	t_errctl	errctl;
-}				t_bodyctl;
+	char	**paths;
+	char	**cmd1;
+	char	**cmd2;
+}				t_pathdata;
+
+typedef struct	s_pipex
+{
+	t_pathdata	pathdata;
+	t_fdbridge	connection;
+}				t_pipex;
 
 /* **************************************** */
 
 /* main */
-//char	*strint	main(int argc, char **argv);
-char	*get_path(const char **env); //strncmp until compare == 0 and while *env
+void	init_path(t_pathdata *pipex, char **av, char **env);
+void	init_fd(t_fdbridge *pipex, char **av);
+void	body(t_pipex *pipex);
+void	end_pipex(t_pipex *pipex);
 
 /* handle */
-char	*err_handle(t_errctl *errctl, int *errvalue, const char *msg);
 
 /* utils */
+char	*get_path(char **env);
+char	**free_dchar(char **ptr);
+int		err_msg(char *msg);
 
 #endif

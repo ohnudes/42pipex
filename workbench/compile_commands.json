@@ -866,13 +866,8 @@
   {
     "arguments": [
       "/usr/bin/gcc",
-      "-g",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-I",
-      "include/",
       "-c",
+      "-Iinclude/",
       "-o",
       "objs/parsing.o",
       "srcs/parsing.c"
@@ -880,5 +875,44 @@
     "directory": "/home/ohnudes/documents/42/pipex/workbench",
     "file": "/home/ohnudes/documents/42/pipex/workbench/srcs/parsing.c",
     "output": "/home/ohnudes/documents/42/pipex/workbench/objs/parsing.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude/",
+      "-o",
+      "objs/utils.o",
+      "srcs/utils.c"
+    ],
+    "directory": "/home/ohnudes/documents/42/pipex/workbench",
+    "file": "/home/ohnudes/documents/42/pipex/workbench/srcs/utils.c",
+    "output": "/home/ohnudes/documents/42/pipex/workbench/objs/utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude/",
+      "-o",
+      "objs/handle.o",
+      "srcs/handle.c"
+    ],
+    "directory": "/home/ohnudes/documents/42/pipex/workbench",
+    "file": "/home/ohnudes/documents/42/pipex/workbench/srcs/handle.c",
+    "output": "/home/ohnudes/documents/42/pipex/workbench/objs/handle.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude/",
+      "-o",
+      "objs/pipex_main.o",
+      "srcs/pipex_main.c"
+    ],
+    "directory": "/home/ohnudes/documents/42/pipex/workbench",
+    "file": "/home/ohnudes/documents/42/pipex/workbench/srcs/pipex_main.c",
+    "output": "/home/ohnudes/documents/42/pipex/workbench/objs/pipex_main.o"
   }
 ]
