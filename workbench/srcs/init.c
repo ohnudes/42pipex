@@ -6,11 +6,12 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 22:16:27 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/10/26 17:19:58 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/10/26 20:47:17 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <unistd.h>
 
 char	*get_path(char **env)
 {
@@ -27,17 +28,17 @@ void	init_path(t_pathdata *pathdata, char **av, char **env)
 	pathdata->paths = ft_split(tmp, ':');
 	if (pathdata->paths == NULL) //add '/' at the end
 		err_msg("init_paths/pathdata->paths_error: ");
-	pathdata->cmd1 = ft_split(av[2], ' ');
-	if (pathdata->cmd1 == NULL)
+	pathdata->rawcmd1 = ft_split(av[2], ' ');
+	if (pathdata->rawcmd1 == NULL)
 	{
 		pathdata->paths = free_dchar(pathdata->paths);
 		err_msg("init_paths/pathdata->cmd1_error: ");
 	}
-	pathdata->cmd2 = ft_split(av[3], ' ');
-	if (pathdata->cmd2 == NULL)
+	pathdata->rawcmd2 = ft_split(av[3], ' ');
+	if (pathdata->rawcmd2 == NULL)
 	{
 		pathdata->paths = free_dchar(pathdata->paths);
-		pathdata->cmd1 = free_dchar(pathdata->cmd1);
+		pathdata->rawcmd1 = free_dchar(pathdata->rawcmd1);
 		err_msg("init_paths/pathdata->cmd2_error: ");
 	}
 }
@@ -59,3 +60,28 @@ void	init_fd(t_fdbridge *connection, char **av)
 	}
 }
 
+void	cmd_check(t_pathdata *pathdata, char ***rawcmd, char *av[])
+{
+	size_t	i;
+	char	*tmp;
+	char	*testcmd;
+
+	i = -1;
+	while (pathdata->paths[++i])//check if protected!
+	{
+		tmp = ft_strjoin(pathdata->paths[i], "/");
+		if (!tmp)
+			perror("cmd_check/strjoin_failed: tmp ");
+		testcmd = ft_strjoin(tmp, **rawcmd);
+		if (!testcmd)
+			perror("cmd_check/strjoin_failed: testcmd ");
+		free(tmp);
+		if (access(testcmd, 0) == 0)
+		{
+			*rawcmd = &testcmd;
+			return ;
+		}
+		free(testcmd);
+	}
+	*rawcmd = NULL;
+}

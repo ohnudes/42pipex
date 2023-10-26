@@ -6,7 +6,7 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 09:59:50 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/05/26 15:02:55 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/10/26 17:53:27 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,58 +23,61 @@ static char	**free_all(char **big, size_t little)
 	return (NULL);
 }
 
-static size_t	str_count(const char *s, const char c)
+static char	**str_count_and_size(const char *str, const char set)
 {
-	size_t	count;
+	char	**mem_alloc;
 	size_t	i;
+	size_t	count;
 
 	i = 0;
 	count = 0;
-	while (s[i] != '\0')
+	while (str[i])
 	{
-		if (s[i] != c)
+		if (str[i] != set)
 			count++;
-		while (s[i] && s[i] != c)
+		while (str[i] && str[i] != set)
 			i++;
-		while (s[i] && s[i] == c)
+		while (str[i] && str[i] == set)
 			i++;
 	}
-	return (count);
+	mem_alloc = NULL;
+	mem_alloc = malloc(sizeof(char **) * (count + 1));
+	return (mem_alloc);
 }
 
-static size_t	str_len(const char *s, const char c)
+static size_t	str_len(const char *str, const char set)
 {
-	size_t	len;
+	size_t	i;
 
-	len = 0;
-	while (s[len] && s[len] != c)
-		len++;
-	return (len);
+	i = 0;
+	while (str[i] && str[i] != set)
+		i++;
+	return (i);
 }
 
-char	**ft_split(const char *s, const char c)
+char	**ft_split(const char *str, const char set)
 {
 	char	**big;
 	size_t	little;
 	size_t	i;
 
-	big = malloc(sizeof(char **) * (str_count(s, c) + 1));
+	big = str_count_and_size(str, set);	
 	if (!big)
 		return (NULL);
 	little = 0;
 	i = 0;
-	while (little < str_count(s, c))
+	while (little < str_count(str, set))
 	{
-		if (s[i] && s[i] != c)
+		if (str[i] && str[i] != set)
 		{
-			big[little] = ft_substr(s, i, str_len((s + i), c));
+			big[little] = ft_substr(str, i, str_len((str + i), set));
 			if (!big[little])
 				return (free_all(big, little));
 			little++;
 		}
-		while (s[i] && s[i] != c)
+		while (str[i] && str[i] != set)
 			i++;
-		while (s[i] && s[i] == c)
+		while (str[i] && str[i] == set)
 			i++;
 	}
 	big[little] = NULL;

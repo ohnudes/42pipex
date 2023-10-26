@@ -24,8 +24,10 @@ typedef struct	s_fdbridge
 typedef struct	s_pathdata
 {
 	char	**paths;
-	char	**cmd1;
-	char	**cmd2;
+	char	**cmd1path;
+	char	**cmd2path;
+	char	**rawcmd1;
+	char	**rawcmd2;
 }				t_pathdata;
 
 typedef struct	s_pipex
@@ -37,12 +39,14 @@ typedef struct	s_pipex
 /* **************************************** */
 
 /* main */
-void	init_path(t_pathdata *pipex, char **av, char **env);
-void	init_fd(t_fdbridge *pipex, char **av);
-void	body(t_pipex *pipex);
+void	body(t_pipex *pipex, char *env[]);
+void	child_labour(t_pipex *pipex);
 void	end_pipex(t_pipex *pipex);
 
 /* handle */
+void	init_path(t_pathdata *pipex, char **av, char **env);
+void	init_fd(t_fdbridge *pipex, char **av);
+void	cmd_check(t_pathdata *pipex, char ***rawcmd, char *av[]);
 
 /* utils */
 char	*get_path(char **env);
