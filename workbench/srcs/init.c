@@ -6,7 +6,7 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 22:16:27 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/10/31 21:16:10 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/11/01 18:33:32 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static char	**finish_paths(char **vector)
 	return (vector);
 }
 
-void	init_path(t_pathdata *pathdata, char **av, char **env)
+int	init_path(t_pathdata *pathdata, char **av, char **env)
 {
 	char	*tmp;
 

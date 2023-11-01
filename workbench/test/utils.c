@@ -1,6 +1,30 @@
 
 #include "test.h"
 
+int	exit_ctl(data_t *pathdata, pipecon_t *pipes, int code)
+{
+	t_exitcode	exit_type[end];
+	int			exitvalue;
+
+	exitvalue = 0;
+	exit_mem(pathdata);
+	exit_fd(pipes);
+	exitvalue = exit_type[code];
+	return (exitvalue);
+}
+
+void	exit_fd(pipecon_t *pipes)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < 2)
+	{
+		close(pipes->ft[i]);
+		i++;
+	}
+}
+
 void	exit_mem(data_t *pdata)
 {
 	size_t	i;

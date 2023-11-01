@@ -33,7 +33,7 @@ static char	**fill_paths(char *raw, char **vector, size_t *path_len)
 	return (vector);
 }
 
-void	init_path(data_t *pdata, char **av, char **env)
+int	init_path(data_t *pdata, char **av, char **env)
 {
 	char	*tmp;
 	tmp = get_path(env);
@@ -49,9 +49,51 @@ void	init_path(data_t *pdata, char **av, char **env)
 			{
 				pdata->rawcmd[1] = ft_split(av[3], ' ');
 				//print_vec(pdata->rawcmd[1], "init_paths/rawcmd[1]");
-				return ;
+				return (0);
 			}
 		}
 	}
 	exit_mem(pdata);
+	return (-1);
+}
+
+int	cmd_check(data_t *pathdata, char **rawcmd[2])
+{
+	size_t	i;
+	size_t	j;
+
+	i = -1;
+	j = 0;
+	while (++i < pathdata->path_len)
+	{
+		pathdata->cmd_path[j] = ft_strjoin(pathdata->paths[i], *rawcmd[j]);
+		if (access(pathdata->cmd_path[j], 0) == 0)
+		{
+			j++;
+			if (j == 2)
+				return (0);
+			i = 0;
+		}
+		else
+			free(pathdata->cmd_path[j]);
+	}
+	return (-1);
+}
+
+int	init_pipe_values(pipecon_t *pipe, int argc, char **argv)
+{
+	pipe->ft[0] = open(argv[1], O_RDONLY);
+	if (pipe->ft[0] == -1)
+	{
+		perror("init_pipe_values/inline: not valid");
+		return (-1);
+	}
+	pipe->ft[1] = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (pipe->ft[1] == -1)
+	{
+		close(pipe->ft[0]);
+		perror("init_pipe_values/outline: error");
+		return (-1);
+	}
+	return (0);
 }

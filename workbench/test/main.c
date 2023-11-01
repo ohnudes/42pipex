@@ -1,39 +1,59 @@
 
 # include "test.h"
 
-void	cmd_check(data_t *pathdata, char **rawcmd[2])
-{
-	size_t	i;
-	size_t	j;
 
-	i = 0;
-	j = 0;
-	while (i < pathdata->path_len)
-	{
-		pathdata->cmd_path[j] = ft_strjoin(pathdata->paths[i], *rawcmd[j]);
-		if (access(pathdata->cmd_path[j], 0) == 0)
-		{
-			printf("cmd_check/cmd_path: valid	%p	%s\n", pathdata->cmd_path[j], pathdata->cmd_path[j]);
-			j++;
-			if (j == 2)
-				return ;
-			i = 0;
-		}
-		else
-		{
-			i++;
-			free(pathdata->cmd_path[j]);
-		}
-	}
+static void	child_two(data_t *pdata, pipecon_t *pipes, char **envp)
+{
+	dup2(pipes->fd[1], WRITE_END);
+	close
+	execve(*pdata->rawcmd[0], pdata->cmd_path, envp);
+}
+
+static void	child_one(data_t *pdata, pipecon_t *pipes, char **envp)
+{
+	dup2(pipes->fd[0], READ_END);
+	execve(*pdata->rawcmd[0], pdata->cmd_path, envp);
+}
+
+int	body(data_t *pdata, pipecon_t *pipes, char **envp)
+{
+	int		status;
+	pid_t	child1;
+	pid_t	child2;
+
+	if (pipe(pipes->fd) == -1)
+		return (exit_ctl(pdata, pipes, 3));
+	child1 = fork();
+	if (child1 == -1)
+		return (exit_ctl(pdata, pipes, 4));
+	if (child1 == 0)
+		child_one(pdata, pipes, envp);
+	child2 = fork();
+	if (child2 == -1)
+		return (exit_ctl(pdata, pipes, 5));
+	if (child2 == 0)
+		child_two(pdata, pipes, envp);
+	waitpid(child1, &status, 0);
+	waitpid(child2, &status, 0);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	data_t	pathdata;
-	
+	data_t		pathdata;
+	pipecon_t	pipes;
+
 	pathdata = (data_t){};
-	init_path(&pathdata, argv, envp);
-	cmd_check(&pathdata, pathdata.rawcmd);
-	exit_mem(&pathdata);
+	pipes = (pipecon_t){};
+	if (init_path(&pathdata, argv, envp) == -1)
+		return (exit_ctl(&pathdata, &pipes, 1));
+	if (cmd_check(&pathdata, pathdata.rawcmd) == -1)
+		return (exit_ctl(&pathdata, &pipes, 1));
+	if (init_pipe_values(&pipes, argc, argv) == -1)
+		return (exit_ctl(&pathdata, &pipes, 2));
+	if (body(&pathdata, &pipes, envp) == -1)
+	{
+
+	}
+	exit_ctl(&pathdata, &pipes, 3);
 	return (0);
 }

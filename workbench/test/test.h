@@ -11,6 +11,9 @@
 # include <sys/wait.h> /* wait, waitpid */
 # include "../libft/includes/libft.h"
 
+# define READ_END 0
+# define WRITE_END 1
+
 typedef struct	data_s
 {
 	size_t	path_len;
@@ -19,15 +22,32 @@ typedef struct	data_s
 	char	*cmd_path[2];
 }				data_t;
 
-//init
-void	init_path(data_t *data, char **av, char **env);
-void	cmd_check(data_t *pipex, char **rawcmd[2]);
+typedef struct	pipecon_s
+{
+	int		ft[2];
+	int		fd[2];
+}				pipecon_t;
 
-//print
+typedef enum	e_exitcode
+{
+	initpath,
+	cmdcheck,
+	initpipe_values,
+	end,
+}				t_exitcode;
+
+/* init, in order of execution */
+int		init_path(data_t *data, char **av, char **env);
+int		cmd_check(data_t *pipex, char **rawcmd[2]);
+int		init_pipe_values(pipecon_t *pipe, int argc, char **argv);
+
+/* print util */
 void	print_vec(char	**str, char *msg);
 
-// utils
+/* utils */
 void	free_vec(char **str);
 void	exit_mem(data_t *pdata);
+void	exit_fd(pipecon_t *pipes);
+int		exit_ctl(data_t *pathdata, pipecon_t *pipes, int code);
 
 #endif
