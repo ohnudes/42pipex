@@ -6,11 +6,11 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/21 15:52:54 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/05/22 10:11:52 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/10/31 21:29:51 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../includes/libft.h"
 
 static	int	isset(const char *set, char c)
 {
@@ -23,25 +23,25 @@ static	int	isset(const char *set, char c)
 	return (0);
 }
 
-char	*ft_strtrim(const char *s1, const char *set)
+char	*ft_strtrim(const char *str, const char *set)
 {
 	size_t	i;
 	size_t	ri;
 	char	*res;
 
-	if (!s1)
+	if (!str)
 		return (ft_strdup(""));
 	i = 0;
-	ri = ft_strlen(s1);
-	while (i < ri && isset(set, s1[i]))
+	ri = ft_strlen(str);
+	while (i < ri && isset(set, str[i]))
 		i++;
-	while (ri > i && isset(set, s1[ri - 1]))
+	while (ri > i && isset(set, str[ri - 1]))
 		ri--;
 	if (i == ri)
 		return (ft_strdup(""));
 	res = malloc(sizeof(char) * (ri - i + 1));
 	if (!res)
 		return (NULL);
-	ft_strlcpy(res, s1 + i, ri - i + 1);
+	ft_strlcpy(res, str + i, ri - i + 1);
 	return (res);
 }

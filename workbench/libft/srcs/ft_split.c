@@ -6,80 +6,80 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 09:59:50 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/10/26 17:53:27 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/11/01 16:20:34 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static char	**free_all(char **big, size_t little)
+static char	**free_all(char **vector, size_t count)
 {
-	while (little)
+	while (count)
 	{
-		little--;
-		free(big[little]);
+		count--;
+		free(vector[count]);
 	}
-	free(big);
+	free(vector);
 	return (NULL);
 }
 
-static char	**str_count_and_size(const char *str, const char set)
+static size_t	str_count(const char *str, const char c)
 {
-	char	**mem_alloc;
-	size_t	i;
 	size_t	count;
+	size_t	i;
 
 	i = 0;
 	count = 0;
-	while (str[i])
+	while (str[i] != '\0')
 	{
-		if (str[i] != set)
+		if (str[i] != c)
 			count++;
-		while (str[i] && str[i] != set)
+		while (str[i] && str[i] != c)
 			i++;
-		while (str[i] && str[i] == set)
+		while (str[i] && str[i] == c)
 			i++;
 	}
-	mem_alloc = NULL;
-	mem_alloc = malloc(sizeof(char **) * (count + 1));
-	return (mem_alloc);
+	return (count);
 }
 
-static size_t	str_len(const char *str, const char set)
+static size_t	str_len(const char *str, const char c)
 {
-	size_t	i;
+	size_t	len;
 
-	i = 0;
-	while (str[i] && str[i] != set)
-		i++;
-	return (i);
+	len = 0;
+	while (str[len] && str[len] != c)
+		len++;
+	return (len);
 }
 
-char	**ft_split(const char *str, const char set)
+char	**ft_split(const char *str, const char c)
 {
-	char	**big;
-	size_t	little;
+	char	**vector;
+	size_t	word_count;
+	size_t	count;
 	size_t	i;
 
-	big = str_count_and_size(str, set);	
-	if (!big)
+	word_count = str_count(str, c);
+	vector = malloc(sizeof(char **) * (word_count + 1));
+	vector[word_count] = NULL;
+	if (!vector)
 		return (NULL);
-	little = 0;
+	count = 0;
 	i = 0;
-	while (little < str_count(str, set))
+	while (count < word_count)
 	{
-		if (str[i] && str[i] != set)
+		if (str[i] && str[i] != c)
 		{
-			big[little] = ft_substr(str, i, str_len((str + i), set));
-			if (!big[little])
-				return (free_all(big, little));
-			little++;
+			vector[count] = ft_substr(str, i, str_len((str + i), c));
+			if (!vector[count])
+				return (free_all(vector, count));
+			count++;
 		}
-		while (str[i] && str[i] != set)
+		while (str[i] && str[i] != c)
 			i++;
-		while (str[i] && str[i] == set)
+		while (str[i] && str[i] == c)
 			i++;
 	}
-	big[little] = NULL;
-	return (big);
+	vector[count] = NULL;
+	return (vector);
 }

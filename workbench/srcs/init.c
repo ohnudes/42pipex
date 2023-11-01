@@ -6,18 +6,39 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 22:16:27 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/10/26 20:47:17 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/10/31 21:16:10 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <unistd.h>
 
-char	*get_path(char **env)
+static char	*get_path(char **env)
 {
 	while (ft_strncmp("PATH", *env, 4) && *env)
 		env++;
 	return (*env + 5);
+}
+
+static char	**finish_paths(char **vector)
+{
+	char	*swp;
+	size_t	i;
+	
+	if (!vector || !*vector)
+	{
+		perror("init_paths/finish_paths/no_str_found");
+		return (NULL);
+	}
+	i = 0;
+	while (vector[i])
+	{
+		swp = vector[i];
+		vector[i] = ft_strjoin(vector[i], "/");
+		free(swp);
+		i++;
+	}
+	return (vector);
 }
 
 void	init_path(t_pathdata *pathdata, char **av, char **env)
@@ -26,6 +47,7 @@ void	init_path(t_pathdata *pathdata, char **av, char **env)
 
 	tmp = get_path(env);
 	pathdata->paths = ft_split(tmp, ':');
+	pathdata->paths = finish_paths(pathdata->paths);
 	if (pathdata->paths == NULL) //add '/' at the end
 		err_msg("init_paths/pathdata->paths_error: ");
 	pathdata->rawcmd1 = ft_split(av[2], ' ');

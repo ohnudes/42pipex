@@ -6,7 +6,7 @@
 #    By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/16 14:32:57 by nmaturan          #+#    #+#              #
-#    Updated: 2023/10/25 17:52:43 by nmaturan         ###   ########.fr        #
+#    Updated: 2023/11/01 15:58:44 by nmaturan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 NAME = libft.a
 
 # Flags al compilar
-FLAGS = -g -Wall -Wextra -Werror 
+FLAGS = -fsanitize=address -g -Wall -Wextra -Werror 
 
 # DIRs
 SRC_DIR = srcs/

@@ -4,6 +4,7 @@ NAME = pipex
 
 # Flags al compilar
 #FLAGS = -g -Wall -Wextra -Werror 
+FLAGS = -fsanitize=address -g
 
 # DIRs
 SRC_DIR = srcs/
@@ -24,7 +25,7 @@ LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
 
 # Test
 TEST_DIR = test/
-TEST_FILE = pathtesting.c
+TEST_FILE = main.c init.c utils.c
 TEST = $(addprefix $(TEST_DIR), $(TEST_FILE))
 TEST_OUT = trymebabe.out
 
@@ -40,7 +41,6 @@ obj:
 
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
-	@make clean -C $(LIBFT_DIR)
 
 $(NAME): $(OBJ) 
 	@echo Creating program $(NAME)...
@@ -50,7 +50,9 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC) Makefile
 	gcc $(FLAGS) -c $< -I$(INC_DIR) -Llibft -lft -o $@
 
 test: $(LIBFT) Makefile
-	gcc -o $(TEST_OUT) $(FLAGS) $(TEST) -I$(INC_DIR) -Llibft -lft 
+	gcc -o $(TEST_OUT) $(FLAGS) -g $(TEST) -I$(INC_DIR) -Llibft -lft 
+	echo "applying following commands to exec\n" && sudo cat ./test.sh
+	./test.sh
 
 # mostrar a Martin
 #update_gitignore:
@@ -63,6 +65,7 @@ fclean: clean
 
 clean:
 	@rm -rf $(OBJ_DIR)
+	@make clean -C $(LIBFT_DIR)
 
 re: fclean all
 

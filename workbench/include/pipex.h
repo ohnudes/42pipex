@@ -49,7 +49,6 @@ void	init_fd(t_fdbridge *pipex, char **av);
 void	cmd_check(t_pathdata *pipex, char ***rawcmd, char *av[]);
 
 /* utils */
-char	*get_path(char **env);
 char	**free_dchar(char **ptr);
 int		err_msg(char *msg);
 
