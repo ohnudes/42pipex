@@ -1,19 +1,21 @@
 
 #include "test.h"
 
-int	exit_ctl(data_t *pathdata, pipecon_t *pipes, int code)
+int	err_relay(const char *msg)
 {
-	t_exitcode	exit_type[end];
-	int			exitvalue;
-
-	exitvalue = 0;
-	exit_mem(pathdata);
-	exit_fd(pipes);
-	exitvalue = exit_type[code];
-	return (exitvalue);
+	perror(msg);
+	return (-1);
 }
 
-void	exit_fd(pipecon_t *pipes)
+int	exit_ctl(data_t *pathdata, pipecon_t *pipes, const char *msg)
+{
+	exit_mem(pathdata);
+	exit_pipes(pipes);
+	perror(msg);
+	exit(0);
+}
+
+void	exit_pipes(pipecon_t *pipes)
 {
 	size_t	i;
 
@@ -21,6 +23,7 @@ void	exit_fd(pipecon_t *pipes)
 	while (i < 2)
 	{
 		close(pipes->ft[i]);
+		close(pipes->fd[i]);
 		i++;
 	}
 }

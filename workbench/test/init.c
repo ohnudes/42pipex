@@ -69,9 +69,12 @@ int	cmd_check(data_t *pathdata, char **rawcmd[2])
 		pathdata->cmd_path[j] = ft_strjoin(pathdata->paths[i], *rawcmd[j]);
 		if (access(pathdata->cmd_path[j], 0) == 0)
 		{
+			perror("cmd_check check");
 			j++;
 			if (j == 2)
+			{
 				return (0);
+			}
 			i = 0;
 		}
 		else
@@ -80,7 +83,7 @@ int	cmd_check(data_t *pathdata, char **rawcmd[2])
 	return (-1);
 }
 
-int	init_pipe_values(pipecon_t *pipe, int argc, char **argv)
+int	init_pipe_values(pipecon_t *pipe, char **argv)
 {
 	pipe->ft[0] = open(argv[1], O_RDONLY);
 	if (pipe->ft[0] == -1)
@@ -88,7 +91,7 @@ int	init_pipe_values(pipecon_t *pipe, int argc, char **argv)
 		perror("init_pipe_values/inline: not valid");
 		return (-1);
 	}
-	pipe->ft[1] = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	pipe->ft[1] = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0777);
 	if (pipe->ft[1] == -1)
 	{
 		close(pipe->ft[0]);

@@ -6,11 +6,11 @@
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 09:59:50 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/05/26 15:02:55 by nmaturan         ###   ########.fr       */
+/*   Updated: 2023/11/05 20:30:59 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../includes/libft.h"
 
 static char	**free_all(char **big, size_t little)
 {
