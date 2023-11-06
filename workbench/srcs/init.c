@@ -5,105 +5,116 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/22 22:16:27 by nmaturan          #+#    #+#             */
-/*   Updated: 2023/11/01 18:33:32 by nmaturan         ###   ########.fr       */
+/*   Created: 2023/11/06 13:00:43 by nmaturan          #+#    #+#             */
+/*   Updated: 2023/11/06 13:14:35 by nmaturan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
-#include <unistd.h>
+#include "../include/pipex.h"
 
 static char	*get_path(char **env)
 {
 	while (ft_strncmp("PATH", *env, 4) && *env)
 		env++;
+	errno = 0;
 	return (*env + 5);
 }
 
-static char	**finish_paths(char **vector)
+static char	**fill_paths(char *raw, char **vector, size_t *path_len)
 {
 	char	*swp;
 	size_t	i;
-	
-	if (!vector || !*vector)
-	{
-		perror("init_paths/finish_paths/no_str_found");
-		return (NULL);
-	}
+	size_t	j;
+
 	i = 0;
+	j = 0;
+	vector = ft_split(raw, ':');
+	if (!vector)
+		return (NULL);
 	while (vector[i])
 	{
 		swp = vector[i];
-		vector[i] = ft_strjoin(vector[i], "/");
-		free(swp);
+		j = ft_strlen(swp);
+		if (swp[j - 1] != '/')
+		{
+			vector[i] = ft_strjoin(vector[i], "/");
+			free(swp);
+		}
 		i++;
 	}
+	*path_len = i;
+	errno = 0;
 	return (vector);
 }
 
-int	init_path(t_pathdata *pathdata, char **av, char **env)
+int	init_path(data_t *pdata, char **av, char **env)
 {
 	char	*tmp;
 
 	tmp = get_path(env);
-	pathdata->paths = ft_split(tmp, ':');
-	pathdata->paths = finish_paths(pathdata->paths);
-	if (pathdata->paths == NULL) //add '/' at the end
-		err_msg("init_paths/pathdata->paths_error: ");
-	pathdata->rawcmd1 = ft_split(av[2], ' ');
-	if (pathdata->rawcmd1 == NULL)
+	if (tmp)
 	{
-		pathdata->paths = free_dchar(pathdata->paths);
-		err_msg("init_paths/pathdata->cmd1_error: ");
+		pdata->paths = fill_paths(tmp, pdata->paths, &pdata->path_len);
+		if (pdata->paths)
+		{
+			pdata->rawcmd[0] = ft_split(av[2], ' ');
+			if (pdata->rawcmd[0])
+				pdata->rawcmd[1] = ft_split(av[3], ' ');
+			if (pdata->rawcmd[0] && pdata->rawcmd[1])
+			{
+				errno = 0;
+				return (0);
+			}
+		}
 	}
-	pathdata->rawcmd2 = ft_split(av[3], ' ');
-	if (pathdata->rawcmd2 == NULL)
-	{
-		pathdata->paths = free_dchar(pathdata->paths);
-		pathdata->rawcmd1 = free_dchar(pathdata->rawcmd1);
-		err_msg("init_paths/pathdata->cmd2_error: ");
-	}
+	exit_mem(pdata);
+	return (-1);
 }
 
-void	init_fd(t_fdbridge *connection, char **av)
-{
-	connection->ft1 = open(av[1], O_RDONLY);
-	if (connection->ft1 == -1)
-	{
-		perror("init_fd/open_error: ");
-		exit(EXIT_FAILURE);
-	}
-	connection->ft2 = open(av[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (connection->ft2 == -1)
-	{
-		close(connection->ft1);
-		perror("init_fd/open_error: ");
-		exit(EXIT_FAILURE);
-	}
-}
-
-void	cmd_check(t_pathdata *pathdata, char ***rawcmd, char *av[])
+int	cmd_check(data_t *pathdata, char **rawcmd[2])
 {
 	size_t	i;
-	char	*tmp;
-	char	*testcmd;
+	size_t	j;
 
 	i = -1;
-	while (pathdata->paths[++i])//check if protected!
+	j = 0;
+	while (++i < pathdata->path_len)
 	{
-		tmp = ft_strjoin(pathdata->paths[i], "/");
-		if (!tmp)
-			perror("cmd_check/strjoin_failed: tmp ");
-		testcmd = ft_strjoin(tmp, **rawcmd);
-		if (!testcmd)
-			perror("cmd_check/strjoin_failed: testcmd ");
-		free(tmp);
-		if (access(testcmd, 0) == 0)
+		pathdata->cmd_path[j] = ft_strjoin(pathdata->paths[i], *rawcmd[j]);
+		if (access(pathdata->cmd_path[j], 0) == 0)
 		{
-			*rawcmd = &testcmd;
-			return ;
+			if (j + 1 == 2)
+				break ;
+			j++;
+			i = 0;
 		}
-		free(testcmd);
+		else
+			free(pathdata->cmd_path[j]);
 	}
-	*rawcmd = NULL;
+	if (pathdata->cmd_path[j] == NULL)
+	{
+		perror("cmd_check check");
+		return (-1);
+	}
+	errno = 0;
+	return (0);
+}
+
+int	init_pipe_values(pipecon_t *pipe, char **argv)
+{
+	pipe->ft[0] = open(argv[1], O_RDONLY);
+	if (pipe->ft[0] == -1)
+	{
+		perror("init_pipe_values/inline: not valid");
+		return (-1);
+	}
+	pipe->ft[1] = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0777);
+	if (pipe->ft[1] == -1)
+	{
+		close(pipe->ft[0]);
+		perror("init_pipe_values/outline: error");
+		return (-1);
+	}
+	errno = 0;
+	return (0);
 }

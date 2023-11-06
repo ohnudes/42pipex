@@ -1,55 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 12:46:58 by nmaturan          #+#    #+#             */
+/*   Updated: 2023/11/06 13:22:19 by nmaturan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# define READ_END 0
-# define WRITE_END 1
-# define MAX_PATH_LENGHT 4096
-
-# include <unistd.h> /* close, read, write, access, dup, dup2, exit, pipe, execve */
+/* close, read, write, access, dup, dup2, exit, pipe, execve */
+# include <unistd.h>
 # include <fcntl.h> /* open, unlink */
 # include <stdlib.h> /* malloc, free */
 # include <stdio.h> /* perror */
 # include <string.h> /* strerror */
 # include <sys/types.h> /* fork, wait, waitpid */
 # include <sys/wait.h> /* wait, waitpid */
+# include <errno.h>
 # include "../libft/includes/libft.h"
 
-typedef struct	s_fdbridge
-{
-	int		ft1;
-	int		ft2;
-	int		fd[2];
-}				t_fdbridge;
+# define READ_END 0
+# define WRITE_END 1
 
-typedef struct	s_pathdata
+typedef struct data_s
 {
+	size_t	path_len;
 	char	**paths;
-	char	**cmd1path;
-	char	**cmd2path;
-	char	**rawcmd1;
-	char	**rawcmd2;
-}				t_pathdata;
+	char	**rawcmd[2];
+	char	*cmd_path[2];
+}				data_t;
 
-typedef struct	s_pipex
+typedef struct pipecon_s
 {
-	t_pathdata	pathdata;
-	t_fdbridge	connection;
-}				t_pipex;
+	int		ft[2];
+	int		fd[2];
+}			pipecon_t;
 
-/* **************************************** */
+/* init, in order of execution */
+int		init_path(data_t *data, char **av, char **env);
+int		cmd_check(data_t *pipex, char **rawcmd[2]);
+int		init_pipe_values(pipecon_t *pipe, char **argv);
 
-/* main */
-void	body(t_pipex *pipex, char *env[]);
-void	child_labour(t_pipex *pipex);
-void	end_pipex(t_pipex *pipex);
-
-/* handle */
-void	init_path(t_pathdata *pipex, char **av, char **env);
-void	init_fd(t_fdbridge *pipex, char **av);
-void	cmd_check(t_pathdata *pipex, char ***rawcmd, char *av[]);
+/* print util */
+void	print_vec(char	**str, char *msg);
 
 /* utils */
-char	**free_dchar(char **ptr);
-int		err_msg(char *msg);
+void	exit_mem(data_t *pdata);
+void	exit_pipes(pipecon_t *pipes);
+int		exit_ctl(data_t *pathdata, pipecon_t *pipes, const char *msg);
+int		err_relay(const char *msg);
 
 #endif

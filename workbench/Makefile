@@ -3,8 +3,8 @@
 NAME = pipex
 
 # Flags al compilar
-#FLAGS = -g -Wall -Wextra -Werror 
-FLAGS = -fsanitize=address -g
+FLAGS = -g -Wall -Wextra -Werror 
+TESTFLAGS = -fsanitize=address -g
 
 # DIRs
 SRC_DIR = srcs/
@@ -13,7 +13,7 @@ INC_DIR = include/
 LIBFT_DIR = libft/
 
 # Sources files
-SRC_FILE = init.c utils.c handle.c pipex_main.c
+SRC_FILE = init.c utils.c main.c
 OBJ_FILE = $(SRC_FILE:.c=.o)
 INC_FILE = pipex.h
 
@@ -34,25 +34,25 @@ LNK = ar rc
 
 #### Compilacion del programa ####
 
-all: obj $(LIBFT) $(NAME) 
+all: $(LIBFT) $(NAME) 
 
-obj:
-	@mkdir -p $(OBJ_DIR)
+#obj:
+#@mkdir -p $(OBJ_DIR)
 
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
 
-$(NAME): $(OBJ) 
+$(NAME): $(INC) $(LIBFT)
 	@echo Creating program $(NAME)...
-	cc $(OBJ) -L$(LIBFT_DIR) -lft -o $(NAME)
+	cc -o $(NAME) $(FLAGS) $(SRC) -I$(INC_DIR) -L$(LIBFT_DIR) -lft 
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC) Makefile
-	gcc $(FLAGS) -c $< -I$(INC_DIR) -Llibft -lft -o $@
+#$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC) Makefile
+#gcc $(FLAGS) -c $< -I$(INC_DIR) -Llibft -lft -o $@
 
-test: $(LIBFT) Makefile
-	gcc -o $(TEST_OUT) $(FLAGS) -g $(TEST) -I$(INC_DIR) -Llibft -lft 
-	echo "applying following commands to exec\n" && sudo cat ./test.sh
-	./test.sh
+test: re all
+	echo "applying following commands to exec\n" && cat a.sh
+	./a.sh
+#gcc -o $(TEST_OUT) $(TESTFLAGS) $(TEST) -I$(INC_DIR) -Llibft -lft 
 
 # mostrar a Martin
 #update_gitignore:

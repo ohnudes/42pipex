@@ -1,30 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nmaturan <nmaturan@student.42barcel>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 12:43:51 by nmaturan          #+#    #+#             */
+/*   Updated: 2023/11/06 13:14:43 by nmaturan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# include "test.h"
-#include <unistd.h>
+#include "../include/pipex.h"
 
 static int	child_two(data_t *pdata, pipecon_t *pipes, char **envp)
 {
-	perror("childtwo checkpoint");
 	dup2(pipes->fd[0], STDIN_FILENO);
 	dup2(pipes->ft[1], STDOUT_FILENO);
 	close(pipes->fd[1]);
 	close(pipes->fd[0]);
 	if (execve(pdata->cmd_path[1], pdata->rawcmd[1], envp) == -1)
 		return (err_relay("child_one/execve == -1"));
-	perror("child two success");
+	errno = 0;
 	exit(EXIT_SUCCESS);
 }
 
 static int	child_one(data_t *pdata, pipecon_t *pipes, char **envp)
 {
-	perror("childone checkpoint");
 	dup2(pipes->ft[0], STDIN_FILENO);
 	dup2(pipes->fd[1], STDOUT_FILENO);
 	close(pipes->fd[0]);
 	close(pipes->fd[1]);
 	if (execve(pdata->cmd_path[0], pdata->rawcmd[0], envp) == -1)
 		return (err_relay("child_one/execve == -1"));
-	perror("child one success");
+	errno = 0;
 	exit(EXIT_SUCCESS);
 }
 
@@ -49,7 +57,9 @@ int	body(data_t *pdata, pipecon_t *pipes, char **envp)
 	close(pipes->fd[1]);
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, NULL, 0);
-	exit_ctl(pdata, pipes, EXIT_SUCCESS);
+	exit_mem(pdata);
+	exit_pipes(pipes);
+	errno = 0;
 	return (0);
 }
 
@@ -66,12 +76,13 @@ int	main(int argc, char *argv[], char *envp[])
 	pathdata = (data_t){};
 	pipes = (pipecon_t){};
 	if (init_path(&pathdata, argv, envp) == -1)
-		return (exit_ctl(&pathdata, &pipes, "main/init_path/return value == -1"));
+		return (exit_ctl(&pathdata, &pipes, "init_path/returns -1"));
 	if (cmd_check(&pathdata, pathdata.rawcmd) == -1)
-		return (exit_ctl(&pathdata, &pipes, "main/cmd_check/return value == -1"));
+		return (exit_ctl(&pathdata, &pipes, "cmd_check/returns -1"));
 	if (init_pipe_values(&pipes, argv) == -1)
-		return (exit_ctl(&pathdata, &pipes, "main/init_pipe_values/return value == -1"));
+		return (exit_ctl(&pathdata, &pipes, "init_pipe_values/returns -1"));
 	if (body(&pathdata, &pipes, envp) == -1)
-		return (exit_ctl(&pathdata, &pipes, "main/body/return value == -1"));
+		return (exit_ctl(&pathdata, &pipes, "main/body/returns -1"));
+	errno = 0;
 	return (0);
 }
